@@ -2,7 +2,7 @@
   "name": "electronTrayProject",
   "version": "1.0.0",
   "description": "Open VSCode projects from tray menu.",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "start": "electron .",
     "dev": "nodemon --exec electron .",
