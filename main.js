@@ -1,7 +1,9 @@
 const { resolve, basename } = require('path');
-const { app, Tray, Menu, dialog } = require('electron');
+const { app, Tray, Menu, dialog, MenuItem } = require('electron');
 const Store = require('electron-store');
+const spawn = require('cross-spawn');
 let tray = null;
+const fs = require('fs');
 
 const schema = {
     projects: {
@@ -9,27 +11,79 @@ const schema = {
     }
 }
 
+let mainTray = {};
+
 const store = new Store({ schema });
 
-app.on('ready', () => {
-    tray = new Tray(resolve(__dirname, 'assets', 'iconWhiteTemplate.png'));
+function render(tray = mainTray) {
     const storedProjects = store.get('projects');
     const projects = storedProjects ? JSON.parse(storedProjects) : [];
 
-    console.log(projects);
+    const items = projects.map(( { name, path } ) => ({
+        label: name,
+        submenu: [
+            {
+                label: 'Abri no VSCode',
+                click: () => {
+                    spawn('code', [path]);
+                },
+            },
+            {
+                label: 'Remover',
+                click: () => {
+                    store.set('projects', JSON.stringify(projects.filter(item => item.path !== path)));
+                    render();
+                },
+            },
+        ],
+    }));
 
     const contextMenu = Menu.buildFromTemplate([
-        {label: 'Item1', type: 'radio', checked: true, click: () => {
-            const [ path ] = dialog.showOpenDialog({properties: ['openDirectory']});
+        {
+            label: 'Adicionar novo projeto...',
+            click: () => {
+                const result = dialog.showOpenDialog({ properties: [ 'openDirectory']});
 
-            store.set('projects', JSON.stringify([...projects, {
-                path,
-                name: basename(path),
-            }]));
-        }}
+                if (!result) return;
+
+                const [ path ] = result;
+                const name = basename(path);
+
+                store.set(
+                    'projects',
+                    JSON.stringify([
+                        ...projects,
+                        {
+                            path,
+                            name,
+                        },
+                    ]),
+                );
+
+                render();
+            },
+        },
+        {
+            type: 'separator',
+        },
+        ...items,
+        {
+            type: 'separator',
+        },
+        {
+            type: 'normal',
+            label: 'Fechar Code Tray',
+            role: 'quit',
+            enabled: true,
+        },
     ]);
-    
+
     tray.setContextMenu(contextMenu);
+    tray.on('click', tray.popUpContextMenu);
+}
+
+app.on('ready', () => {
+    mainTray = new Tray(resolve(__dirname, 'assets', 'iconWhiteTemplate.png'));
+
+    render(mainTray);
 });
-
-
