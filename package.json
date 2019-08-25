@@ -29,5 +29,22 @@
     "eslint-config-airbnb-base": "^13.2.0",
     "eslint-plugin-import": "^2.18.0",
     "nodemon": "^1.19.1"
+  },
+  "build": {
+    "appId": "com.rocketseat.codetray",
+    "productName": "Code Tray",
+    "mac": {
+      "category": "public.app-category.developer-tools"
+    },
+    "linux": {
+      "category": "Utility",
+      "icon": "icon.png",
+      "target": [
+        "deb",
+        "snap",
+        "rpm"
+      ]
+    }
   }
+
 }

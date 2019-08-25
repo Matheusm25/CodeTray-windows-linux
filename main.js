@@ -2,6 +2,8 @@ const { resolve, basename } = require('path');
 const { app, Tray, Menu, dialog, MenuItem } = require('electron');
 const Store = require('electron-store');
 const spawn = require('cross-spawn');
+const { exec } = require('child_process');
+
 let tray = null;
 const fs = require('fs');
 
@@ -23,9 +25,21 @@ function render(tray = mainTray) {
         label: name,
         submenu: [
             {
-                label: 'Abri no VSCode',
+                label: 'Abrir no VSCode',
                 click: () => {
                     spawn('code', [path]);
+                },
+            },
+            {
+                label: 'Abrir no terminal',
+                click: () => {
+                    spawn.sync('gnome-terminal', '--working-directory="' + [path] + '"');
+                },
+            },
+            {
+                label: 'Abrir no Explorer',
+                click: () => {
+                    var x = exec('nemo ' + [path])
                 },
             },
             {
