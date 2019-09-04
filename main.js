@@ -30,12 +30,12 @@ function render(tray = mainTray) {
                     spawn('code', [path]);
                 },
             },
-            // {
-            //     label: 'Abrir no terminal',
-            //     click: () => {
-            //         spawn.sync('gnome-terminal', '--working-directory="' + [path] + '"');
-            //     },
-            // },
+            {
+                label: 'Abrir no terminal',
+                click: () => {
+                    exec('gnome-terminal --working-directory="' + [path] + '"');
+                },
+            },
             {
                 label: 'Abrir no Explorer',
                 click: () => {
