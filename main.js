@@ -39,7 +39,7 @@ function render(tray = mainTray) {
             {
                 label: 'Abrir no Explorer',
                 click: () => {
-                    var x = exec('nemo ' + [path])
+                    var x = exec('nemo ' + [path]);
                 },
             },
             {
